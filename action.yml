@@ -1,22 +1,15 @@
-name: 'alipay-cloud-devops-codescan'
-description: 'Greet someone and record the time'
+name: 'translate'
+description: 'translate'
 inputs:
-    parent_uid:  # id of input
+    fromDir:  # id of input
         description: 'a param to get token'
         required: true
-    private_key:  # id of input
-        description: 'another param to get token'
+    toDir: # id of input
+        description: 'a param to get token'
         required: true
-    scan_type: #  type of input
+    to: #  type of input
         description: 'stc for security check , sca for open source compliance check'
         required: true
-    tips: #  prompt
-        description: 'prompt tips'
-        required: false
-        default: ' '
-outputs:
-    result: # id of output
-        description: 'code scan passed or not'
 runs:
     using: 'node16'
     main: 'dist/index.js'

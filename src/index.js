@@ -2,104 +2,107 @@ const core = require('@actions/core');
 const axios = require('axios');
 const jobProcessors = require('./jobprocessors/processors');
 const {context} = require("@actions/github");
-
+const translate =  require('@tomsun28/google-translate-api')
+const fs = require('fs');
+const path = require('path');
 
 let notCare = getStarted();
 async function getStarted() {
     let failed = false;
     try {
-        const spaceId = `600095`;
-        const projectId = `19500036`;
+        // const spaceId = `600095`;
+        // const projectId = `19500036`;
         // 从参数获取branch和codeRepo
-        const branchName = process.env.GITHUB_HEAD_REF;
-        const branch = branchName.replace('refs/heads/','')
-        const codeRepo = context.payload.pull_request.head.repo.ssh_url;
-        const codeType = process.env.INPUT_SCAN_TYPE;
-        const tips = core.getInput('tips', { required: true })
-        core.debug("branch:" + branch);
-        core.debug("codeRepo:" + codeRepo);
-        core.debug("codeType:" + codeType);
+        // const branchName = process.env.GITHUB_HEAD_REF;
+        // const branch = branchName.replace('refs/heads/','')
+        // const codeRepo = context.payload.pull_request.head.repo.ssh_url;
+        // const codeType = process.env.INPUT_SCAN_TYPE;
+        const fromDir = core.getInput('fromDir', { required: true })
+        const toDir = core.getInput('toDir', { required: true })
+        const to = core.getInput('to', { required: true })
+        core.debug("fromdir:" + fromDir);
+        core.debug("to:" + to);
 
-        // 1. 获取token
-        core.info("start...");
-        const tokenResponse = await axios.post('https://tcloudrunconsole.openapi.cloudrun.cloudbaseapp.cn/v2/login/serviceaccount', {
-            "parent_uid": core.getInput('parent_uid', { required: true }),
-            "private_key": core.getInput('private_key', { required: true }),
-        });
-        const token = tokenResponse.data.data.access_token;
+        await processDirectory(fromDir, toDir);
 
-        // 设置请求头
-        const headers = {
-            'Authorization': `Bearer ${token}`,
-            'x-node-id': core.getInput('parent_uid', { required: true }),
-            'Content-Type': 'application/json'
-        };
+        core.info("translate  completed");
 
-        // Set templateId based on codeType
-        let templateId;
-        if (codeType === "sca") {
-            templateId = 20000430;
-        } else if (codeType === "stc") {
-            templateId = 20000425;
-        } else {
-            core.error("错误：无效的codeType");
-            return;
-        }
-
-        // 2. 调用代码检查
-        const pipelineExecuteResponse = await axios.post(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/execute`, {
-            "templateId": templateId,
-            "branch": branch,
-            "codeRepo": codeRepo
-        }, {
-            headers: headers
-        });
-        core.debug("pipelineExecuteResponse: "+JSON.stringify(pipelineExecuteResponse.data));
-        const recordId = pipelineExecuteResponse.data.result.recordId;
-
-        // 3. 循环获取recordInfo
-        core.info("Scanning...");
-        let status = "";
-        const timeout = 20; // minute
-        let recordResponse;
-        for (let i = 0; i < timeout * 6; i++) {
-            recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
-                headers: headers
-            });
-            status = recordResponse.data.result.status;
-            if (status === "FINISHED") {
-                break;
-            }
-            await sleep(10);
-        }
-        core.info("Scan completed");
-
-        // 获取失败的job, 获取失败信息
-        core.debug("recordResponse.data: " + JSON.stringify(recordResponse.data))
-        const recordResult = recordResponse.data.result;
-        const allJobs = recordResult.stageExecutions.flatMap(stage => stage.jobExecutions);
-        for (const failureJob of allJobs) {
-            const jobId = failureJob.id;
-            const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`, {
-                headers: headers
-            });
-            core.debug("jobResponse.data: " + JSON.stringify(jobResponse.data))
-            const link = `https://devops.cloud.alipay.com/project/${projectId}/${recordId}/pipeline/details`;
-            core.warning(`详情请查看：${link}` + "  " + tips);
-            const jobDetail = jobResponse.data.result.data;
-            const jobProcessor = jobProcessors[failureJob.componentName];
-            if (jobProcessor) {
-                failed = jobProcessor(jobDetail) || failed;
-            }
-        }
     } catch (error) {
         core.setFailed(error.message);
     }
     core.setOutput("result", failed ? "FAILED" : "PASSED");
 }
 
-function sleep(seconds) {
-    return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+async function translateIssueOrigin(body)  {
+    let result = ''
+    await translate(body, {to: 'en'})
+        .then(res => {
+            if (res.text !== body) {
+                result = res.text
+            }
+        })
+        .catch(err => {
+            core.error(err)
+            core.setFailed(err.message)
+        })
+    return result
 }
-module.exports = getStarted;
+
+async function processDirectory(dirPath, enDirPath) {
+    const files = fs.readdirSync(dirPath);
+
+    for (const file of files) {
+        const filePath = path.join(dirPath, file);
+        const stats = fs.statSync(filePath);
+
+        if (stats.isDirectory()) {
+            const newEnDirPath = path.join(enDirPath, file);
+            fs.mkdirSync(newEnDirPath, { recursive: true });
+            await processDirectory(filePath, newEnDirPath);
+        } else if (path.extname(file) === '.md') {
+            const filePath = path.join(dirPath, file);
+            const enFilePath = path.join(enDirPath, file);
+            await processFile(filePath, enFilePath);
+
+        }
+    }
+}
+
+async function processFile(filePath, enFilePath) {
+    core.info("开始翻译文件："+filePath.toString())
+    const content = fs.readFileSync(filePath, 'utf-8');
+    const chunks = splitText(content, 2000);
+
+    const translatedChunks = [];
+    for (const chunk of chunks) {
+        const translatedChunk = await translateIssueOrigin(chunk);
+        translatedChunks.push(translatedChunk);
+    }
+
+    const translatedContent = translatedChunks.join('');
+    fs.writeFileSync(enFilePath, translatedContent);
+}
+
+function splitText(text, chunkSize) {
+    const chunks = [];
+    let currentChunk = '';
+
+    for (const char of text) {
+        currentChunk += char;
+        if (currentChunk.length >= chunkSize) {
+            chunks.push(currentChunk);
+            currentChunk = '';
+        }
+    }
+
+    if (currentChunk) {
+        chunks.push(currentChunk);
+    }
+
+    return chunks;
+}
+module.exports = {
+    getStarted:getStarted,
+    processDirectory:processDirectory
+};
 
