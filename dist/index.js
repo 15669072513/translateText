@@ -49787,8 +49787,8 @@ async function gitclone() {
     const branchName = process.env.GITHUB_HEAD_REF;
     const branch = branchName.replace('refs/heads/', '')
     const codeRepo = context.payload.pull_request
-    core.debug("branch:" + branch);
-    core.debug("codeRepo:" + codeRepo);
+    core.info("branch:" + branch);
+    core.info("codeRepo:" + codeRepo);
     var repoUrl = "git@github.com:15669072513/layotto.git";
     if (fs.existsSync("./layotto")) {
         core.info("目录存在");
