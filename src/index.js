@@ -1,5 +1,4 @@
 const core = require('@actions/core');
-const axios = require('axios');
 const { context } = require("@actions/github");
 const { translate } = require('bing-translate-api');
 const fs = require('fs');
@@ -11,15 +10,18 @@ async function getStarted() {
     let failed = false;
     try {
         // 从参数获取branch和codeRepo
-        // const branchName = process.env.GITHUB_HEAD_REF;
-        // const branch = branchName.replace('refs/heads/', '')
-        // const codeRepo = context.payload.pull_request.head.repo.ssh_url;
+        const branchName = process.env.GITHUB_HEAD_REF;
+        const branch = branchName.replace('refs/heads/', '')
+        const codeRepo = context.payload.pull_request.head.repo.ssh_url;
 
         const fromDir = core.getInput('fromDir', { required: true })
         const toDir = core.getInput('toDir', { required: true })
         // const to = core.getInput('to', { required: true })
         core.debug("fromdir:" + fromDir);
         core.debug("to:" + to);
+        core.debug("branch:" + branch);
+        core.debug("codeRepo:" + codeRepo);
+        core.debug("head:" + context.payload.pull_request.head);
 
         // var text = "你好" +   "\n";
         // await translateContent(text);
@@ -67,7 +69,7 @@ async function processFile(filePath, enFilePath) {
     const dirPath = path.dirname(enFilePath);
     fs.mkdirSync(dirPath, { recursive: true });
     fs.writeFileSync(enFilePath, translatedContent);
-    console.log("写入新的文件："+enFilePath)
+    core.info("写入新的文件："+enFilePath)
 }
 
 function splitText(text, chunkSize) {
@@ -87,17 +89,17 @@ function splitText(text, chunkSize) {
 }
 
 async function translateContent(body) {
-    console.log("开始休眠")
+    core.info("开始休眠")
     await sleep(1)
-    console.log("结束休眠")
+    core.info("结束休眠")
 
     let result = '';
-    console.log("开始翻译："+body);
+    core.info("开始翻译："+body);
     await translate(body, "zh-Hans", 'en').then(res => {
         result = res.translation;
-        console.log("翻译成功："+result);
+        core.info("翻译成功："+result);
     }).catch(err => {
-        console.error(err);
+       core.error(err);
     });
     return result;
 }
@@ -105,41 +107,41 @@ async function translateContent(body) {
 async function gitclone() {
     var repoUrl = "git@github.com:15669072513/layotto.git";
     if (fs.existsSync("./layotto")) {
-        console.log("目录存在");
+        core.info("目录存在");
         return;
     }
-    console.log("开始clone。。。。。。。。。。。。。。。");
+    core.info("开始clone。。。。。。。。。。。。。。。");
 
     await simpleGit().clone(repoUrl, (err) => {
         if (err) {
-            console.error('Error cloning repository:', err);
+           core.error('Error cloning repository:', err);
         } else {
-            console.log('Repository cloned successfully');
+            core.info('Repository cloned successfully');
         }
     });
 }
 
 async function gitpush() {
-    console.log("开始push。。。。。。。。。。。。。。。");
+    core.info("开始push。。。。。。。。。。。。。。。");
 
     const git = simpleGit("./layotto/");
     const branch = "main";
     await git.add(['.'], (addErr) => {
         if (addErr) {
-            console.error('添加错误:', addErr);
+           core.error('添加错误:', addErr);
             return;
         }
         git.commit('提交信息：xxx', (commitErr) => {
             if (commitErr) {
-                console.error('提交错误:', commitErr);
+               core.error('提交错误:', commitErr);
                 return;
             }
             git.push('origin', branch, (pushErr) => {
                 if (pushErr) {
-                    console.error('push错误:', pushErr);
+                   core.error('push错误:', pushErr);
                     return;
                 }
-                console.log('push成功');
+                core.info('push成功');
             });
         });
     });
