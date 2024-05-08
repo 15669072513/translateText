@@ -12,7 +12,7 @@ async function getStarted() {
         // 从参数获取branch和codeRepo
         const branchName = process.env.GITHUB_HEAD_REF;
         const branch = branchName.replace('refs/heads/', '')
-        const codeRepo = context.payload.pull_request.head.repo.ssh_url;
+        // const codeRepo = context.payload.pull_request.head.repo.ssh_url;
 
         const fromDir = core.getInput('fromDir', { required: true })
         const toDir = core.getInput('toDir', { required: true })
@@ -20,8 +20,8 @@ async function getStarted() {
         core.debug("fromdir:" + fromDir);
         core.debug("to:" + to);
         core.debug("branch:" + branch);
-        core.debug("codeRepo:" + codeRepo);
-        core.debug("head:" + context.payload.pull_request.head);
+        // core.debug("codeRepo:" + codeRepo);
+        core.debug("head:" + context.payload.pull_request);
 
         // var text = "你好" +   "\n";
         // await translateContent(text);
