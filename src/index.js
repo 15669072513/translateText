@@ -23,6 +23,7 @@ async function getStarted() {
         core.debug("todir:" + toDir);
         core.debug("to:" + to);
         core.debug("head:" + context.payload.pull_request);
+        core.debug("branchname:" +  process.env.GITHUB_HEAD_REF);
 
         // var text = "你好" +   "\n";
         // await translateContent(text);
