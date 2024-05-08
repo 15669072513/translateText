@@ -9,13 +9,6 @@ let notCare = getStarted();
 async function getStarted() {
     let failed = false;
     try {
-        // 从参数获取branch和codeRepo
-        // const branchName = process.env.GITHUB_HEAD_REF;
-        // const branch = branchName.replace('refs/heads/', '')
-        // const codeRepo = context.payload.pull_request.head.repo.ssh_url;
-        // core.debug("branch:" + branch);
-        // core.debug("codeRepo:" + codeRepo);
-
         const fromDir = core.getInput('fromDir', { required: true })
         const toDir = core.getInput('toDir', { required: true })
         const to = core.getInput('to', { required: true })
@@ -154,6 +147,5 @@ function sleep(seconds) {
 }
 
 module.exports = {
-    getStarted: getStarted,
-    processDirectory: processDirectory
+    getStarted: getStarted
 };
