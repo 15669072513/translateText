@@ -10,17 +10,18 @@ async function getStarted() {
     let failed = false;
     try {
         // 从参数获取branch和codeRepo
-        const branchName = process.env.GITHUB_HEAD_REF;
-        const branch = branchName.replace('refs/heads/', '')
+        // const branchName = process.env.GITHUB_HEAD_REF;
+        // const branch = branchName.replace('refs/heads/', '')
         // const codeRepo = context.payload.pull_request.head.repo.ssh_url;
+        // core.debug("branch:" + branch);
+        // core.debug("codeRepo:" + codeRepo);
 
         const fromDir = core.getInput('fromDir', { required: true })
         const toDir = core.getInput('toDir', { required: true })
-        // const to = core.getInput('to', { required: true })
+        const to = core.getInput('to', { required: true })
         core.debug("fromdir:" + fromDir);
+        core.debug("todir:" + toDir);
         core.debug("to:" + to);
-        core.debug("branch:" + branch);
-        // core.debug("codeRepo:" + codeRepo);
         core.debug("head:" + context.payload.pull_request);
 
         // var text = "你好" +   "\n";
