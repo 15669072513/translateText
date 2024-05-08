@@ -49697,8 +49697,8 @@ async function getStarted() {
         // await translateContent(text);
         await gitclone()
         //
-        // await processDirectory("./layotto/docs/zh/", "./layotto/docs/en/");
-        await processDirectory(fromDir, toDir);
+        // await processDirectory("./layotto/docs/zh/", "./layotto/docs/en/","en");
+        await processDirectory(fromDir, toDir,to);
         // //
         await gitpush()
         core.info("work  completed");
@@ -49708,7 +49708,7 @@ async function getStarted() {
     core.setOutput("result", failed ? "FAILED" : "PASSED");
 }
 
-async function processDirectory(dirPath, enDirPath) {
+async function processDirectory(dirPath, enDirPath,to) {
     const files = fs.readdirSync(dirPath);
     for (const file of files) {
         const filePath = path.join(dirPath, file);
@@ -49720,19 +49720,19 @@ async function processDirectory(dirPath, enDirPath) {
         } else if (path.extname(file) === '.md') {
             const filePath = path.join(dirPath, file);
             const enFilePath = path.join(enDirPath, file);
-            await processFile(filePath, enFilePath);
+            await processFile(filePath, enFilePath,to);
         }
     }
 }
 
-async function processFile(filePath, enFilePath) {
+async function processFile(filePath, enFilePath,to) {
     core.info("开始翻译文件：" + filePath.toString());
     const content = fs.readFileSync(filePath, 'utf-8');
     const chunks = splitText(content, 1000);
     core.info("分为几个部分翻译：" +chunks.length);
     const translatedChunks = [];
     for (const chunk of chunks) {
-        const translatedChunk = await translateContent(chunk);
+        const translatedChunk = await translateContent(chunk,to);
         translatedChunks.push(translatedChunk);
     }
     const translatedContent = translatedChunks.join('');
@@ -49758,14 +49758,14 @@ function splitText(text, chunkSize) {
     return chunks;
 }
 
-async function translateContent(body) {
+async function translateContent(body,to) {
     core.info("开始休眠")
     await sleep(1)
     core.info("结束休眠")
 
     let result = '';
     core.info("开始翻译："+body);
-    await translate(body, "zh-Hans", 'en').then(res => {
+    await translate(body, "zh-Hans", to).then(res => {
         result = res.translation;
         core.info("翻译成功："+result);
     }).catch(err => {
