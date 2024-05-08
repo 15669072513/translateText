@@ -12,13 +12,22 @@ async function getStarted() {
         const fromDir = core.getInput('fromDir', { required: true })
         const toDir = core.getInput('toDir', { required: true })
         const to = core.getInput('to', { required: true })
+
+
+        // 从参数获取branch和codeRepo
+        const branchName = process.env.GITHUB_HEAD_REF;
+        const branch = branchName.replace('refs/heads/', '')
+        const codeRepo = context.payload.pull_request
+        core.debug("branch:" + branch);
+        core.debug("codeRepo:" + codeRepo);
+
         core.debug("fromdir:" + fromDir);
         core.debug("todir:" + toDir);
         core.debug("to:" + to);
 
         // var text = "你好" +   "\n";
         // await translateContent(text);
-        // await gitclone()
+        await gitclone()
         //
         // await processDirectory("./layotto/docs/zh/", "./layotto/docs/en/","en");
         await processDirectory(fromDir, toDir,to);
@@ -98,6 +107,11 @@ async function translateContent(body,to) {
 }
 
 async function gitclone() {
+    const branchName = process.env.GITHUB_HEAD_REF;
+    const branch = branchName.replace('refs/heads/', '')
+    const codeRepo = context.payload.pull_request
+    core.debug("branch:" + branch);
+    core.debug("codeRepo:" + codeRepo);
     var repoUrl = "git@github.com:15669072513/layotto.git";
     if (fs.existsSync("./layotto")) {
         core.info("目录存在");
