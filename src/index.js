@@ -18,7 +18,7 @@ async function getStarted() {
 
         // var text = "你好" +   "\n";
         // await translateContent(text);
-        await gitclone()
+        // await gitclone()
         //
         // await processDirectory("./layotto/docs/zh/", "./layotto/docs/en/","en");
         await processDirectory(fromDir, toDir,to);
