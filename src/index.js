@@ -117,7 +117,7 @@ async function gitclone() {
 async function gitpush() {
     core.info("开始push。。。。。。。。。。。。。。。");
 
-    const git = simpleGit("./layotto/");
+    const git = simpleGit("./");
     const branch = "main";
     await git.add(['.'], (addErr) => {
         if (addErr) {
