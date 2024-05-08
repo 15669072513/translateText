@@ -1,4 +1,4 @@
-name: 'translate'
+name: 'translateText'
 description: 'translate'
 inputs:
     fromDir:  # id of input
