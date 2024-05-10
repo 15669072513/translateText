@@ -49789,7 +49789,7 @@ async function gitclone() {
     const codeRepo = context.payload.pull_request
     core.info("branch:" + branch);
     core.info("codeRepo:" + codeRepo);
-    var repoUrl = "git@github.com:15669072513/layotto.git";
+    var repoUrl = "https://github.com/15669072513/layotto.git";
     if (fs.existsSync("./layotto")) {
         core.info("目录存在");
         return;

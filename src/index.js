@@ -9,28 +9,36 @@ let notCare = getStarted();
 async function getStarted() {
     let failed = false;
     try {
-        const fromDir = core.getInput('fromDir', { required: true })
-        const toDir = core.getInput('toDir', { required: true })
-        const to = core.getInput('to', { required: true })
+        // const fromDir = core.getInput('fromDir', { required: true })
+        // const toDir = core.getInput('toDir', { required: true })
+        // const to = core.getInput('to', { required: true })
+        // // 从参数获取branch和codeRepo
+        // const branchName = process.env.GITHUB_HEAD_REF;
+        // const branch = branchName.replace('refs/heads/', '')
+        // const codeRepo = context.payload.pull_request
+        const eventPath = process.env.GITHUB_EVENT_PATH
+// 读取文件内容
+        fs.readFile(eventPath, 'utf8', (err, data) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            // 打印内容
+            console.log(data);
+        });
+        // core.debug("branch:" + branch);
+        // core.debug("codeRepo:" + codeRepo);
+        // core.debug("fromdir:" + fromDir);
+        // core.debug("todir:" + toDir);
+        // core.debug("to:" + to);
 
 
-        // 从参数获取branch和codeRepo
-        const branchName = process.env.GITHUB_HEAD_REF;
-        const branch = branchName.replace('refs/heads/', '')
-        const codeRepo = context.payload.pull_request
-        core.debug("branch:" + branch);
-        core.debug("codeRepo:" + codeRepo);
-
-        core.debug("fromdir:" + fromDir);
-        core.debug("todir:" + toDir);
-        core.debug("to:" + to);
-
-        // var text = "你好" +   "\n";
-        // await translateContent(text);
         await gitclone()
+
+        // await processDirectory(fromDir, toDir,to);
+
         //
-        // await processDirectory("./layotto/docs/zh/", "./layotto/docs/en/","en");
-        await processDirectory(fromDir, toDir,to);
+        await processDirectory("./layotto/docs/zh/", "./layotto/docs/en/","en");
         // //
         await gitpush()
         core.info("work  completed");
@@ -107,12 +115,12 @@ async function translateContent(body,to) {
 }
 
 async function gitclone() {
-    const branchName = process.env.GITHUB_HEAD_REF;
-    const branch = branchName.replace('refs/heads/', '')
-    const codeRepo = context.payload.pull_request
-    core.info("branch:" + branch);
-    core.info("codeRepo:" + codeRepo);
-    var repoUrl = "git@github.com:15669072513/layotto.git";
+    // const branchName = process.env.GITHUB_HEAD_REF;
+    // const branch = branchName.replace('refs/heads/', '')
+    // const codeRepo = context.payload.pull_request
+    // core.info("branch:" + branch);
+    // core.info("codeRepo:" + codeRepo);
+    var repoUrl = "https://github.com/15669072513/layotto.git";
     if (fs.existsSync("./layotto")) {
         core.info("目录存在");
         return;
