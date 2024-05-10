@@ -20,11 +20,11 @@ async function getStarted() {
 // 读取文件内容
         fs.readFile(eventPath, 'utf8', (err, data) => {
             if (err) {
-                console.error(err);
+                core.error(err);
                 return;
             }
             // 打印内容
-            console.log(data);
+            core.info("事件内容："+data);
         });
         // core.debug("branch:" + branch);
         // core.debug("codeRepo:" + codeRepo);
