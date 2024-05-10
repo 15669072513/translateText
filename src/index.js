@@ -9,13 +9,13 @@ let notCare = getStarted();
 async function getStarted() {
     let failed = false;
     try {
-        // const fromDir = core.getInput('fromDir', { required: true })
-        // const toDir = core.getInput('toDir', { required: true })
-        // const to = core.getInput('to', { required: true })
-        // // 从参数获取branch和codeRepo
-        // const branchName = process.env.GITHUB_HEAD_REF;
-        // const branch = branchName.replace('refs/heads/', '')
-        // const codeRepo = context.payload.pull_request
+        const fromDir = core.getInput('fromDir', { required: true })
+        const toDir = core.getInput('toDir', { required: true })
+        const to = core.getInput('to', { required: true })
+        // 从参数获取branch和codeRepo
+        const branchName = process.env.GITHUB_HEAD_REF;
+        const branch = branchName.replace('refs/heads/', '')
+        const codeRepo = context.payload.pull_request
         const eventPath = process.env.GITHUB_EVENT_PATH
 // 读取文件内容
         fs.readFile(eventPath, 'utf8', (err, data) => {
@@ -26,19 +26,19 @@ async function getStarted() {
             // 打印内容
             core.info("事件内容："+data);
         });
-        // core.debug("branch:" + branch);
-        // core.debug("codeRepo:" + codeRepo);
-        // core.debug("fromdir:" + fromDir);
-        // core.debug("todir:" + toDir);
-        // core.debug("to:" + to);
+        core.debug("branch:" + branch);
+        core.debug("codeRepo:" + codeRepo);
+        core.debug("fromdir:" + fromDir);
+        core.debug("todir:" + toDir);
+        core.debug("to:" + to);
 
 
         await gitclone()
 
-        // await processDirectory(fromDir, toDir,to);
+        await processDirectory(fromDir, toDir,to);
 
         //
-        await processDirectory("./layotto/docs/zh/", "./layotto/docs/en/","en");
+        // await processDirectory("./layotto/docs/zh/", "./layotto/docs/en/","en");
         // //
         await gitpush()
         core.info("work  completed");
