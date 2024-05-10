@@ -49819,17 +49819,24 @@ async function gitpush() {
     const git = simpleGit("./");
     const branch = "en";
     await git.checkoutLocalBranch('en',(addErr) => {
+        core.info("切换en分支")
      git.add(['.'], (addErr) => {
+         core.info("Git添加")
+
         if (addErr) {
            core.error('添加错误:', addErr);
             return;
         }
         git.commit('提交信息：xxx', (commitErr) => {
+            core.info("Git提交")
+
             if (commitErr) {
                core.error('提交错误:', commitErr);
                 return;
             }
             git.push('origin', branch, (pushErr) => {
+                core.info("Git 上传")
+
                 if (pushErr) {
                    core.error('push错误:', pushErr);
                     return;
