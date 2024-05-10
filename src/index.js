@@ -140,8 +140,9 @@ async function gitpush() {
     core.info("开始push。。。。。。。。。。。。。。。");
 
     const git = simpleGit("./");
-    const branch = "main";
-    await git.add(['.'], (addErr) => {
+    const branch = "en";
+    await git.checkoutLocalBranch('en',(addErr) => {
+     git.add(['.'], (addErr) => {
         if (addErr) {
            core.error('添加错误:', addErr);
             return;
@@ -160,6 +161,7 @@ async function gitpush() {
             });
         });
     });
+});
 }
 
 function sleep(seconds) {
