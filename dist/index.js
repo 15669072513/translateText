@@ -49691,7 +49691,7 @@ async function getStarted() {
         const to = core.getInput('to', { required: true })
         const gitToken = core.getInput('gitToken', { required: true })
         // 从参数获取branch和codeRepo
-        const codeRepo = context.payload.pull_request
+        const repository = process.env.GITHUB_REPOSITORY;
         const eventPath = process.env.GITHUB_EVENT_PATH
 // 读取文件内容
         fs.readFile(eventPath, 'utf8', (err, data) => {
@@ -49702,7 +49702,7 @@ async function getStarted() {
             // 打印内容
             core.info("事件内容："+data);
         });
-        core.info("codeRepo:" + codeRepo);
+        core.info("repository:" + repository);
         core.info("fromdir:" + fromDir);
         core.info("todir:" + toDir);
         core.info("to:" + to);
