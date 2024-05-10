@@ -49689,9 +49689,8 @@ async function getStarted() {
         const fromDir = core.getInput('fromDir', { required: true })
         const toDir = core.getInput('toDir', { required: true })
         const to = core.getInput('to', { required: true })
+        const gitToken = core.getInput('gitToken', { required: true })
         // 从参数获取branch和codeRepo
-        const branchName = process.env.GITHUB_HEAD_REF;
-        const branch = branchName.replace('refs/heads/', '')
         const codeRepo = context.payload.pull_request
         const eventPath = process.env.GITHUB_EVENT_PATH
 // 读取文件内容
@@ -49703,11 +49702,11 @@ async function getStarted() {
             // 打印内容
             core.info("事件内容："+data);
         });
-        core.debug("branch:" + branch);
-        core.debug("codeRepo:" + codeRepo);
-        core.debug("fromdir:" + fromDir);
-        core.debug("todir:" + toDir);
-        core.debug("to:" + to);
+        core.info("codeRepo:" + codeRepo);
+        core.info("fromdir:" + fromDir);
+        core.info("todir:" + toDir);
+        core.info("to:" + to);
+        core.info("gitToken:" + gitToken);
 
 
         await gitclone()
@@ -49792,12 +49791,13 @@ async function translateContent(body,to) {
 }
 
 async function gitclone() {
-    // const branchName = process.env.GITHUB_HEAD_REF;
-    // const branch = branchName.replace('refs/heads/', '')
-    // const codeRepo = context.payload.pull_request
-    // core.info("branch:" + branch);
-    // core.info("codeRepo:" + codeRepo);
-    var repoUrl = "https://github.com/15669072513/layotto.git";
+    const branchName = process.env.GITHUB_HEAD_REF;
+    const branch = branchName.replace('refs/heads/', '')
+    const codeRepo = context.payload.pull_request
+    const giToken = core.getInput('gitToken', { required: true })
+    core.info("branch:" + branch);
+    core.info("codeRepo:" + codeRepo);
+    var repoUrl = "https://"+giToken+"@github.com/15669072513/layotto-simple.git";
     if (fs.existsSync("./layotto")) {
         core.info("目录存在");
         return;
