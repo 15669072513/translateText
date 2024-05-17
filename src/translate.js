@@ -2,9 +2,46 @@ const { translate } = require('bing-translate-api');
 const fs = require('fs');
 const fsp = require('fs/promises');
 const GoogleTranslate = require('@tomsun28/google-translate-api')
-
 const path = require('path');
+//测试代码
+// let promise = testTrans();
 
+async function testTrans() {
+   let body = "## 社区\n" +
+        "\n" +
+        "| 平台                                               | 联系方式                                                                                                                                                     |\n" +
+        "| :------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |\n" +
+        "| 💬 [钉钉](https://www.dingtalk.com/zh) (用户群)     | 群号: 31912621 或者扫描下方二维码 <br> <img src=\"https://gw.alipayobjects.com/mdn/rms_5891a1/afts/img/A*--KAT7yyxXoAAAAAAAAAAAAAARQnAQ\" height=\"200px\"> <br> |\n" +
+        "| 💬 [钉钉](https://www.dingtalk.com/zh) (社区会议群) | 群号：41585216 <br> [Layotto 在每周五晚 8 点进行社区会议，欢迎所有人](zh/community/meeting.md)                                                               |\n";
+
+   await replaceTrans(body,"en")
+}
+
+
+// replaceTrans
+async function replaceTrans(body,to) {
+    const imgRegex = /<img[^>]+>/g;
+    const matches = body.match(imgRegex) || [];
+// 替换匹配到的内容
+    let replacedString = body;
+    matches.forEach((match, index) => {
+        console.log("开始替换："+match)
+        replacedString = replacedString.replace(match, `{$${index}}`);
+    });
+    console.log("翻译原文："+replacedString)
+    let result = await translateContent(replacedString,"en");
+    // 把替换后的字符串变回原来的样子
+    matches.forEach((match, index) => {
+        console.log("替换回来："+match)
+        result = result?.replace(`{$${index}}`, match);
+    });
+    return result;
+}
+
+
+
+
+//---------------------------------------------------
 async function translateDir(fromDir, toDir, to) {
     try {
         console.info("fromdir:" + fromDir);
@@ -53,11 +90,11 @@ async function processDirectory(dirPath, enDirPath,to) {
 async function processFile(filePath, enFilePath,to) {
     console.info("开始翻译文件：" + filePath.toString());
     const content = fs.readFileSync(filePath, 'utf-8');
-    const chunks = splitText(content, 1000);
+    const chunks = splitText(content, 1500);
     console.info("分为几个部分翻译：" +chunks.length);
     const translatedChunks = [];
     for (const chunk of chunks) {
-        const translatedChunk = await translateContent(chunk,to);
+        const translatedChunk = await replaceTrans(chunk,to);
         translatedChunks.push(translatedChunk);
     }
     const translatedContent = translatedChunks.join('');
@@ -85,34 +122,16 @@ function splitText(text, chunkSize) {
 
 async function translateContent(body,to) {
     console.info("开始休眠")
-    await sleep(100)
+    await sleep(1000)
     console.info("结束休眠")
 
     let result = '';
-//     body = "## 社区\n" +
-//         "\n" +
-//         "| 平台                                               | 联系方式                                                                                                                                                     |\n" +
-//         "| :------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |\n" +
-//         "| 💬 [钉钉](https://www.dingtalk.com/zh) (用户群)     | 群号: 31912621 或者扫描下方二维码 <br> <img src=\"https://gw.alipayobjects.com/mdn/rms_5891a1/afts/img/A*--KAT7yyxXoAAAAAAAAAAAAAARQnAQ\" height=\"200px\"> <br> |\n" +
-//         "| 💬 [钉钉](https://www.dingtalk.com/zh) (社区会议群) | 群号：41585216 <br> [Layotto 在每周五晚 8 点进行社区会议，欢迎所有人](zh/community/meeting.md)                                                               |\n";
-//     // 使用正则表达式匹配<img>标签中的内容
-//     const imgRegex: RegExp = /<img[^>]+>/g;
-//     const matches: string[] = body.match(imgRegex) || [];
-// // 替换匹配到的内容
-//     let replacedString: string = chunk;
-//     matches.forEach((match: string, index: number) => {
-//         replacedString.replace(match, `{$${index}}`);
-//     });
-    console.info("开始翻译："+body);
-
-
     await GoogleTranslate(body, {to: 'en'}).then(res => {
         console.log("翻译成功："+res.text);
         result = res.text
     }).catch(err => {
         console.error(err);
     });
-
 
     // await translate(body, "zh-Hans", to).then(res => {
     //     result = res.translation;
@@ -123,10 +142,7 @@ async function translateContent(body,to) {
     return result;
 }
 
-// 把替换后的字符串变回原来的样子
-// matches.forEach((match: string, index: number) => {
-//     result = result?.replace(`{$${index}}`, match);
-// });
+
 
 function sleep(seconds) {
     return new Promise(resolve => setTimeout(resolve, seconds * 1));
