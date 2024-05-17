@@ -1,9 +1,8 @@
 const core = require('@actions/core');
 const { context } = require("@actions/github");
-const { translate } = require('bing-translate-api');
 const fs = require('fs');
-const path = require('path');
 const simpleGit = require('simple-git');
+const translateDir = require('translate.js');
 let notCare = getStarted();
 
 async function getStarted() {
@@ -31,13 +30,9 @@ async function getStarted() {
         core.info("to:" + to);
         core.info("gitToken:" + gitToken);
 
-
         await gitclone()
 
-        await processDirectory(fromDir, toDir,to);
-
-        //
-        // await processDirectory("./layotto/docs/zh/", "./layotto/docs/en/","en");
+        await translateDir.translateDir(fromDir, toDir, to)
         // //
         await gitpush()
         core.info("work  completed");
@@ -45,72 +40,6 @@ async function getStarted() {
         core.setFailed(error.message);
     }
     core.setOutput("result", failed ? "FAILED" : "PASSED");
-}
-
-async function processDirectory(dirPath, enDirPath,to) {
-    const files = fs.readdirSync(dirPath);
-    for (const file of files) {
-        const filePath = path.join(dirPath, file);
-        const stats = fs.statSync(filePath);
-        if (stats.isDirectory()) {
-            const newEnDirPath = path.join(enDirPath, file);
-            fs.mkdirSync(newEnDirPath, { recursive: true });
-            await processDirectory(filePath, newEnDirPath);
-        } else if (path.extname(file) === '.md') {
-            const filePath = path.join(dirPath, file);
-            const enFilePath = path.join(enDirPath, file);
-            await processFile(filePath, enFilePath,to);
-        }
-    }
-}
-
-async function processFile(filePath, enFilePath,to) {
-    core.info("开始翻译文件：" + filePath.toString());
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const chunks = splitText(content, 1000);
-    core.info("分为几个部分翻译：" +chunks.length);
-    const translatedChunks = [];
-    for (const chunk of chunks) {
-        const translatedChunk = await translateContent(chunk,to);
-        translatedChunks.push(translatedChunk);
-    }
-    const translatedContent = translatedChunks.join('');
-    const dirPath = path.dirname(enFilePath);
-    fs.mkdirSync(dirPath, { recursive: true });
-    fs.writeFileSync(enFilePath, translatedContent);
-    core.info("写入新的文件："+enFilePath)
-}
-
-function splitText(text, chunkSize) {
-    const chunks = [];
-    let currentChunk = '';
-    for (const char of text) {
-        currentChunk += char;
-        if (currentChunk.length >= chunkSize) {
-            chunks.push(currentChunk);
-            currentChunk = '';
-        }
-    }
-    if (currentChunk) {
-        chunks.push(currentChunk);
-    }
-    return chunks;
-}
-
-async function translateContent(body,to) {
-    core.info("开始休眠")
-    await sleep(1)
-    core.info("结束休眠")
-
-    let result = '';
-    core.info("开始翻译："+body);
-    await translate(body, "zh-Hans", to).then(res => {
-        result = res.translation;
-        core.info("翻译成功："+result);
-    }).catch(err => {
-       core.error(err);
-    });
-    return result;
 }
 
 async function gitclone() {
