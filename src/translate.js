@@ -33,7 +33,7 @@ async function replaceTrans(body,to) {
         replacedString = replacedString.replace(match, `{$${index}}`);
     });
     // console.debug("翻译原文："+replacedString)
-    let result = await translateContent(replacedString,"en");
+    let result = await translateContent(replacedString,to);
     // 把替换后的字符串变回原来的样子
     matches.forEach((match, index) => {
         // console.debug("替换回来："+match)
@@ -125,7 +125,7 @@ async function translateContent(body,to) {
     await sleep(1000)
 
     let result = '';
-    await GoogleTranslate(body, {to: 'en'}).then(res => {
+    await GoogleTranslate(body, {to: to}).then(res => {
         console.debug("分段翻译成功："+res.text);
         result = res.text
     }).catch(err => {
