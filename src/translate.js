@@ -1,4 +1,3 @@
-const { translate } = require('bing-translate-api');
 const fs = require('fs');
 const fsp = require('fs/promises');
 const GoogleTranslate = require('@tomsun28/google-translate-api')
@@ -66,8 +65,9 @@ async function checkFile(path) {
 async function processDirectory(dirPath, enDirPath,to) {
 
     let isFile = await checkFile(dirPath);
+    let split = dirPath.split("/");
     if(isFile){
-        await processFile(dirPath, enDirPath,to);
+        await processFile(dirPath, enDirPath+split[split.length-1],to);
         return;
     }
     const files = fs.readdirSync(dirPath);
@@ -78,7 +78,6 @@ async function processDirectory(dirPath, enDirPath,to) {
             const newEnDirPath = path.join(enDirPath, file);
             fs.mkdirSync(newEnDirPath, { recursive: true });
             await processDirectory(filePath, newEnDirPath);
-        // } else  if (path.extname(file) === '.md') {
         } else  {
             const filePath = path.join(dirPath, file);
             const enFilePath = path.join(enDirPath, file);
