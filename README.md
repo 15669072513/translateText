@@ -16,6 +16,10 @@ curl -sLO https://raw.githubusercontent.com/15669072513/translateText/main/trans
 fromDir : 你的待翻译文件或者文件夹
 toDir: 翻译后的文件或文件夹保存地址
 to: 翻译目标语言
+
+例如：
+node translate-macos ./a.txt ./en en  把当前目录a.txt翻译至en目录下面
+node translate-macos ./zh/ ./en en    把当前目录zh文件夹的所有文档翻译至en目录下面
 ````
 
 
@@ -31,4 +35,7 @@ node translate.js {fromDir} {toDir} en
 fromDir : 你的待翻译文件或者文件夹
 toDir: 翻译后的文件或文件夹保存地址
 to: 翻译目标语言
+例如：
+node translate.js ./a.txt ./en en  把当前目录a.txt翻译至en目录下面
+node translate.js ./zh/ ./en en    把当前目录zh文件夹的所有文档翻译至en目录下面
 ````
