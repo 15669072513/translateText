@@ -20,9 +20,10 @@ to: 翻译目标语言
 
 
 
-##  使用方式2：必须保证本地装有node环境，下载源文件，用node执行,跨操作系统
+##  使用方式2：必须保证本地装有node环境，下载源文件，执行node install 安装依赖，然后用node执行
 ````
 curl -sLO https://raw.githubusercontent.com/15669072513/translateText/main/src/translate.js
+npm install --save  tomsun28/google-translate-api    
 ````
 ## 使用 
 ````
