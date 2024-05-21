@@ -3,20 +3,24 @@ const fs = require('fs');
 const fsp = require('fs/promises');
 const GoogleTranslate = require('@tomsun28/google-translate-api')
 const path = require('path');
-//测试代码
-// let promise = testTrans();
 
-async function testTrans() {
-   let body = "## 社区\n" +
-        "\n" +
-        "| 平台                                               | 联系方式                                                                                                                                                     |\n" +
-        "| :------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |\n" +
-        "| 💬 [钉钉](https://www.dingtalk.com/zh) (用户群)     | 群号: 31912621 或者扫描下方二维码 <br> <img src=\"https://gw.alipayobjects.com/mdn/rms_5891a1/afts/img/A*--KAT7yyxXoAAAAAAAAAAAAAARQnAQ\" height=\"200px\"> <br> |\n" +
-        "| 💬 [钉钉](https://www.dingtalk.com/zh) (社区会议群) | 群号：41585216 <br> [Layotto 在每周五晚 8 点进行社区会议，欢迎所有人](zh/community/meeting.md)                                                               |\n";
+let notCare = translateLocal();
 
-   await replaceTrans(body,"en")
+async function translateLocal() {
+    try {
+        const args = process.argv.slice(2);
+        const fromDir = args[0]
+        const toDir = args[1]
+        const to =  typeof args[2]==="undefined"?"en": args[2]
+        console.info("待翻译文件夹:" + fromDir);
+        console.info("翻译至文件夹:" + toDir);
+        console.info("翻译语言:" + to);
+        await translateDir(fromDir,toDir,to)
+        console.info("翻译完成！");
+    } catch (error) {
+        console.error(error.message);
+    }
 }
-
 
 // replaceTrans
 async function replaceTrans(body,to) {
@@ -25,14 +29,14 @@ async function replaceTrans(body,to) {
 // 替换匹配到的内容
     let replacedString = body;
     matches.forEach((match, index) => {
-        console.log("开始替换："+match)
+        // console.debug("开始替换："+match)
         replacedString = replacedString.replace(match, `{$${index}}`);
     });
-    console.log("翻译原文："+replacedString)
+    // console.debug("翻译原文："+replacedString)
     let result = await translateContent(replacedString,"en");
     // 把替换后的字符串变回原来的样子
     matches.forEach((match, index) => {
-        console.log("替换回来："+match)
+        // console.debug("替换回来："+match)
         result = result?.replace(`{$${index}}`, match);
     });
     return result;
@@ -44,11 +48,7 @@ async function replaceTrans(body,to) {
 //---------------------------------------------------
 async function translateDir(fromDir, toDir, to) {
     try {
-        console.info("fromdir:" + fromDir);
-        console.info("todir:" + toDir);
-        console.info("to:" + to);
         await processDirectory(fromDir, toDir,to);
-        console.info("work  completed");
     } catch (error) {
         console.error(error.message);
     }
@@ -121,13 +121,12 @@ function splitText(text, chunkSize) {
 }
 
 async function translateContent(body,to) {
-    console.info("开始休眠")
+    // console.debug("开始休眠")
     await sleep(1000)
-    console.info("结束休眠")
 
     let result = '';
     await GoogleTranslate(body, {to: 'en'}).then(res => {
-        console.log("翻译成功："+res.text);
+        console.debug("分段翻译成功："+res.text);
         result = res.text
     }).catch(err => {
         console.error(err);

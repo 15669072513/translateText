@@ -4,7 +4,7 @@ const fs = require('fs');
 const simpleGit = require('simple-git');
 const translateDir = require('translate.js');
 let notCare = getStarted();
-
+//action 文件
 async function getStarted() {
     let failed = false;
     try {
