@@ -5,7 +5,7 @@ console.log("最新的文件列表"+files)
 
 function getLatestCommitFileList(repoPath) {
     const git = simpleGit(repoPath);
-    // 获取最新提交的改动文件列表
+    // 获取最新提交的改动文件列表11
     let diff = git.diff(['HEAD~1', 'HEAD', '--name-only'], (error, result) => {
         if (error) {
             console.error(error)

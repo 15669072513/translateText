@@ -131,6 +131,7 @@ async function translateContent(body,to) {
         console.error(err);
     });
 
+    // bing 翻译
     // await translate(body, "zh-Hans", to).then(res => {
     //     result = res.translation;
     //     console.info("翻译成功："+result);
