@@ -35,8 +35,9 @@ async function doTransFromGitCommit(repoPath, toDir,commitDepth, to) {
             console.error(error)
         } else {
             // 提取改动的文件列表
-            const fileList = result.split('\n').filter(Boolean).map(file => `${repoPath}/${file}`); // 过滤掉空行
-            console.log("最近" + commitDepth + "次提交文件列表：" + fileList)
+            const fileListOrigin = result.split('\n').filter(Boolean).map(file => `${repoPath}/${file}`); // 过滤掉空行
+            const fileList = new Set(fileListOrigin)
+            console.log("最近" + commitDepth + "次提交文件列表：" + fileList.size)
             //循环翻译
             for (const file of fileList) {
                 console.log(file); // 打印每个文件路径
@@ -63,7 +64,9 @@ function getFileListForLatestCommit(commitDepth,repoPath) {
                         reject(error);
                     } else {
                         const fileList = result.trim().split('\n').map(file => `${repoPath}/${file}`); // 过滤掉空行
-                        resolve(fileList);
+                        let setList = new Set(fileList)
+                        console.log("setl列表："+setList)
+                        resolve(setList);
                     }
                 });
             }
