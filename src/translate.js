@@ -11,7 +11,7 @@ async function translateDir(dirPath, enDirPath, to) {
     let isFile = await checkFile(dirPath);
     let split = dirPath.split("/");
     if(isFile){
-        await processFile(dirPath, enDirPath+split[split.length-1],to);
+        await processFile(dirPath, enDirPath+"/"+split[split.length-1],to);
         return;
     }
 
