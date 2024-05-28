@@ -18,24 +18,27 @@ toDir: 翻译后的文件或文件夹保存地址
 to: 翻译目标语言
 
 例如：
-./translate-macos ./a.txt ./en en  把当前目录a.txt翻译至en目录下面
-./translate-macos ./zh/ ./en en    把当前目录zh文件夹的所有文档翻译至en目录下面
+translate-macos {gitRepoDir} {toDir} {commitDepth} {en} 
+gitRepoDir : git项目地址，必填
+toDir: 翻译后的文件或文件夹保存地址，必填
+commitDepth: commit最近第几次提交，默认最近1次，即最新的提交记录，必填
+to: 翻译目标语言，选填，默认英文en
+例如：
+translate-macos ./aa ./aa/en 1 en  把aa文件夹里面根据最近1次的提交记录，把变动文件翻译到aa/en目录里面
 ````
-
-
 
 ##  使用方式2：必须保证本地装有node环境，下载源文件，执行node install 安装依赖，然后用node执行
 ````
 curl -sLO https://raw.githubusercontent.com/15669072513/translateText/main/src/translateDir.js
-npm install --save  tomsun28/google-translate-api    
+npm install --save  tomsun28/google-translate-api    simple-git
 ````
 ## 使用 
 ````
-node translateDir.js {fromDir} {toDir} en
-fromDir : 你的待翻译文件或者文件夹
-toDir: 翻译后的文件或文件夹保存地址
-to: 翻译目标语言
+node translateDir.js {gitRepoDir} {toDir} {commitDepth} {en} 
+gitRepoDir : git项目地址，必填
+toDir: 翻译后的文件或文件夹保存地址，必填
+commitDepth: commit最近第几次提交，默认最近1次，即最新的提交记录，必填
+to: 翻译目标语言，选填，默认英文en
 例如：
-node translateDir.js ./a.txt ./en en  把当前目录a.txt翻译至en目录下面
-node translateDir.js ./zh/ ./en en    把当前目录zh文件夹的所有文档翻译至en目录下面
+node translateDir.js ./aa ./aa/en 1 en  把aa文件夹里面根据最近1次的提交记录，把变动文件翻译到en目录里面
 ````
