@@ -41305,7 +41305,7 @@ module.exports = {
 /***/ 8604:
 /***/ ((module) => {
 
-module.exports = eval("require")("translate.js");
+module.exports = eval("require")("translateDir.js");
 
 
 /***/ }),

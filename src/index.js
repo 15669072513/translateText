@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const { context } = require("@actions/github");
 const fs = require('fs');
 const simpleGit = require('simple-git');
-const translateDir = require('translate.js');
+const translateDir = require('./translateDir.js');
 let notCare = getStarted();
 //action 文件
 async function getStarted() {
