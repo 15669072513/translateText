@@ -4,12 +4,17 @@ const GoogleTranslate = require('@tomsun28/google-translate-api')
 const path = require('path');
 
 async function translateDir(dirPath, enDirPath, to) {
+    if (!fs.existsSync(dirPath)) {
+        console.warn('文件不存在，跳过');
+        return;
+    }
     let isFile = await checkFile(dirPath);
     let split = dirPath.split("/");
     if(isFile){
         await processFile(dirPath, enDirPath+split[split.length-1],to);
         return;
     }
+
     const files = fs.readdirSync(dirPath);
     for (const file of files) {
         const filePath = path.join(dirPath, file);

@@ -27,6 +27,7 @@ async function doTransFromGitCommit(repoPath, toDir,commitDepth, to) {
     if(!commitDepth){
         commitDepth="1";
     }
+
     const git = simpleGit(repoPath);
     // 获取最新提交的改动文件列表
     git.diff(['HEAD~'+commitDepth, 'HEAD', '--name-only'], async (error, result) => {
@@ -45,6 +46,29 @@ async function doTransFromGitCommit(repoPath, toDir,commitDepth, to) {
     });
 
 
+}
+
+
+
+function getFileListForLatestCommit(commitDepth,repoPath) {
+    const git = simpleGit(repoPath);
+    return new Promise((resolve, reject) => {
+        git.log(['-'+commitDepth, '--name-only'], (error, result) => {
+            if (error) {
+                reject(error);
+            } else {
+                const latestCommitId = result.latest.hash;
+                git.show([latestCommitId, '--name-only'], (error, result) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        const fileList = result.trim().split('\n').map(file => `${repoPath}/${file}`); // 过滤掉空行
+                        resolve(fileList);
+                    }
+                });
+            }
+        });
+    });
 }
 
 
