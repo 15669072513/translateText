@@ -12,13 +12,7 @@ curl -sLO https://raw.githubusercontent.com/15669072513/translateText/main/trans
 ````
 ## 直接执行下载好的文件，假如你的文件系统是macos
 ````
-./translate-macos {fromDir} {toDir} en
-fromDir : 你的待翻译文件或者文件夹
-toDir: 翻译后的文件或文件夹保存地址
-to: 翻译目标语言
-
-例如：
-translate-macos {gitRepoDir} {toDir} {commitDepth} {en} 
+./translate-macos {gitRepoDir} {toDir} {commitDepth} {en} 
 gitRepoDir : git项目地址，必填
 toDir: 翻译后的文件或文件夹保存地址，必填
 commitDepth: commit最近第几次提交，默认最近1次，即最新的提交记录，必填
