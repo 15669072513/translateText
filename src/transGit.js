@@ -1,4 +1,5 @@
-const translateDir = require('./translate.js');
+const translateDir = require('/Users/liuhq/translateText/src/translate.js');
+// const translateDir = require('./translate.js');
 const simpleGit = require('simple-git');
 
  let promise = transFromGitCommit();

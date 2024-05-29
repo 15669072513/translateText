@@ -1,5 +1,4 @@
 const fs = require('fs');
-const fsp = require('fs/promises');
 const GoogleTranslate = require('@tomsun28/google-translate-api')
 const path = require('path');
 
@@ -32,7 +31,7 @@ async function translateDir(dirPath, enDirPath, to) {
 }
 async function checkFile(path) {
     try {
-        const stats = await fsp.stat(path);
+        const stats = await fs.promises.stat(path);
         return stats.isFile();
     } catch (error) {
         console.error('发生错误：', error);
@@ -73,7 +72,7 @@ async function replaceTrans(body,to) {
     // 把替换后的字符串变回原来的样子
     matches.forEach((match, index) => {
         // console.debug("替换回来："+match)
-        result = result?.replace(`{$${index}}`, match);
+        result = result.replace(`{$${index}}`, match);
     });
     return result;
 }
