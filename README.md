@@ -8,9 +8,8 @@
 有2种使用方式：
 ## 使用方式1：可执行文件，文件下载有点慢，首先确定你的操作系统，然后下载对应的文件，本次构建有linux macos win.exe 3个版本
 去release里面下载对应系统的文件
-
-````
 ## 直接执行下载好的文件，假如你的文件系统是macos
+
 ````
 ./translate-macos {gitRepoDir} {toDir} {commitDepth} {en} 
 gitRepoDir : git项目地址，必填
