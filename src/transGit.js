@@ -38,7 +38,7 @@ async function doTransFromGitCommit(repoPath, toDir,commitDepth, to) {
             console.error(error)
         } else {
             // 提取改动的文件列表
-            const fileListOrigin = result.split('\n').filter(Boolean).map(file => `${file}`); // 过滤掉空行
+            const fileListOrigin = result.split('\n').filter(Boolean).map(file => `${repoPath}/${file}`); // 过滤掉空行
             const fileList = new Set(fileListOrigin)
             console.log("最近" + commitDepth + "次提交文件列表：" + fileList.size)
             //循环翻译
